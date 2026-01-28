@@ -7,8 +7,6 @@ import org.openqa.selenium.support.PageFactory;
 
 public class LoginPage {
 
-    private WebDriver driver;
-
     @FindBy(id = "user-name")
     private WebElement usernameField;
 
@@ -22,7 +20,6 @@ public class LoginPage {
     private WebElement errorMessage;
 
     public LoginPage(WebDriver driver) {
-        this.driver = driver;
         PageFactory.initElements(driver, this);
     }
 

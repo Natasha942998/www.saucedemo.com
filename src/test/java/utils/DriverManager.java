@@ -4,12 +4,15 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 
-public class DriverManager {
+import java.util.concurrent.ConcurrentHashMap;
 
-    private static WebDriver driver;
+public class DriverManager {
+    private static final ConcurrentHashMap<String, WebDriver> drivers = new ConcurrentHashMap<>();
 
     public static WebDriver getDriver(String browser) {
-        if (driver == null) {
+        String threadId = Thread.currentThread().getName();
+        if (!drivers.containsKey(threadId)) {
+            WebDriver driver;
             switch (browser.toLowerCase()) {
                 case "chrome":
                     driver = new ChromeDriver();
@@ -21,14 +24,16 @@ public class DriverManager {
                     throw new IllegalArgumentException("Unsupported browser: " + browser);
             }
             driver.manage().window().maximize();
+            drivers.put(threadId, driver);
         }
-        return driver;
+        return drivers.get(threadId);
     }
 
     public static void quitDriver() {
+        String threadId = Thread.currentThread().getName();
+        WebDriver driver = drivers.remove(threadId);
         if (driver != null) {
             driver.quit();
-            driver = null;
         }
     }
 }
